@@ -16,15 +16,28 @@ public class Grid : MonoBehaviour
 
     [SerializeField] private float _distance = 0.8f;
 
-    [SerializeField] private Shape _target;
+    [SerializeField] private Shape _shape;
+    [SerializeField] private BlueprintRow _row;
 
-    private List<Vector2> _lastPositions = new List<Vector2>();
+    private List<Vector2Int> _tintedList = new List<Vector2Int>();
 
-    private List<Vector2> _populateList = new List<Vector2>();
+    private List<Vector2Int> _toTintList = new List<Vector2Int>();
+
+    private bool _canPlaceShape = false;
+    public List<Vector2Int> TintList => _toTintList;
+    public List<Vector2Int> TintedList => _tintedList;
+
+    private Camera _cam;
+    [SerializeField] private float _offset;
 
     void Awake()
     {
         InitCellsArray();
+    }
+
+    void Start()
+    {
+        _cam = Camera.main;
     }
 
     [ContextMenu("Get Cells")]
@@ -45,6 +58,7 @@ public class Grid : MonoBehaviour
             {
                 var cell = children[x];
                 _cells[x, y] = cell;
+                cell.name = $"Cell {x}, {y}";
             }
         }
     }
@@ -53,76 +67,127 @@ public class Grid : MonoBehaviour
     public void TintCell(int x, int y)
     {
         _cells[x, y].Tint();
-        _lastPositions.Add(new Vector2(x, y));
+        _tintedList.Add(new Vector2Int(x, y));
     }
 
 
     public void UntintCell(int x, int y)
     {
         _cells[x, y].Untint();
-        _lastPositions.Remove(new Vector2(x, y));
+        _tintedList.Remove(new Vector2Int(x, y));
     }
 
 
     [ContextMenu("Paint closest cell")]
-    public void TintClosestCell()
+    public void TintShape()
     {
-        UntintLastCells();
-        for (int i = 0; i < _target.Tiles.Count; i++)
+        UntintShape();
+        for (int i = 0; i < _shape.Tiles.Count; i++)
         {
-            var targetCell = _target.Tiles[i];
+            var targetCell = _shape.Tiles[i];
             var closestRow = GetClosestRow(targetCell);
             var closestCell = GetClosestCell(targetCell, closestRow);
             var x = closestCell;
             var y = closestRow;
 
             // PopulateCell(x, y);
-            var isAccessible = AddCellToPopulateList(x, y);
+            var isAccessible = AddToTintList(x, y);
 
             if (!isAccessible)
             {
+                _canPlaceShape = false;
                 Debug.Log($"Cell {x}, {y} is not accessible");
-                UntintLastCells();
+                UntintShape();
                 return;
             }
 
         }
-        foreach (var position in _populateList)
-            TintCell((int)position.x, (int)position.y);
+
+        _canPlaceShape = true;
+
+        foreach (var position in _toTintList)
+            TintCell(position.x, position.y);
     }
 
-    private bool AddCellToPopulateList(int x, int y)
+    private bool AddToTintList(int x, int y)
     {
-        if (_populateList.Contains(new Vector2(x, y)))
-            return false;
-        if (!_cells[x, y].IsEmpty)
+        if (_toTintList.Contains(new Vector2Int(x, y)) || !_cells[x, y].IsEmpty)
             return false;
 
-        _populateList.Add(new Vector2(x, y));
+
+        _toTintList.Add(new Vector2Int(x, y));
         return true;
 
     }
 
-    private void UntintLastCells()
+    [ContextMenu("Place Shape")]
+    private void PlaceShape()
     {
-        for (int i = 0; i < _lastPositions.Count; i++)
+        if (!_canPlaceShape)
         {
-            var position = _lastPositions[i];
-            UntintCell((int)position.x, (int)position.y);
+            Debug.Log("Cannot place shape");
+            return;
         }
-        _populateList.Clear();
+        Debug.Log($"Placing shape");
+
+        foreach (var position in _toTintList)
+            _cells[position.x, position.y].PlaceTile();
+
+        _toTintList.Clear();
+        _tintedList.Clear();
+
+    }
+
+    private void UntintShape()
+    {
+        if (_tintedList.Count == 0) return;
+        for (int i = 0; i < _tintedList.Count; i++)
+        {
+            var position = _tintedList[i];
+            UntintCell(position.x, position.y);
+        }
+        _toTintList.Clear();
+
     }
 
     private void Update()
     {
-        /*
-        if (Input.touchCount == 0)
+
+        if (Input.touchCount == 0 || _shape == null)
             return;
-            */
+        var touch = Input.GetTouch(0);
+        var newShapePos = ReadInput(touch);
 
-//        var touch = Input.GetTouch(0);
+        _shape.transform.position = newShapePos + new Vector2(0, _offset);
 
-        TintClosestCell();
+        TintShape();
+
+        if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            FinishDrag();
+    }
+
+    private void FinishDrag()
+    {
+        foreach (var cell in _tintedList)
+            _cells[cell.x, cell.y].PlaceTile();
+        Destroy(_shape.gameObject);
+        _shape = null;
+       // UntintShape();
+        _row.RestoreBlueprints();
+        _toTintList.Clear();
+        _tintedList.Clear();
+    }
+
+    public void SetShape(Shape shape) => _shape = shape;
+
+    private Vector2 ReadInput(Touch touch)
+    {
+
+        var screenPos = new Vector3(touch.position.x, touch.position.y, _cam.transform.position.z);
+        Vector2 worldPosition = _cam.ScreenToWorldPoint(screenPos);
+
+        Debug.Log($"New shape position: {worldPosition}");
+        return worldPosition;
     }
 
 
