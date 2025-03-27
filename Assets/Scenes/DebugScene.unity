@@ -1105,6 +1105,7 @@ MonoBehaviour:
   _distance: 0.8
   _shape: {fileID: 0}
   _row: {fileID: 65641827}
+  _offset: 2
 --- !u!212 &1829240187
 SpriteRenderer:
   m_ObjectHideFlags: 0
