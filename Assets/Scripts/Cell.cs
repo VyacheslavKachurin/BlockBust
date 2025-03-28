@@ -1,54 +1,65 @@
 using UnityEngine;
 
-public class Cell : MonoBehaviour
+
+namespace Assets.Scripts
 {
-    [SerializeField] private SpriteRenderer _childRenderer;
-    [SerializeField] private Sprite _dummy;
-    [SerializeField] private Sprite _base;
-
-    private bool _isEmpty = true;
-    private bool _isTinted = false;
-    [SerializeField] private Color _placedColor = Color.gray;
-
-    public bool IsEmpty => _isEmpty;
-
-
-    public void Untint()
+    public class Cell : MonoBehaviour
     {
-        _childRenderer.enabled = false;
-        _childRenderer.sprite = null;
-        _isTinted = false;
-    }
+        [SerializeField] private SpriteRenderer _childRenderer;
+        [SerializeField] private Sprite _dummy;
+        [SerializeField] private Sprite _base;
 
-    public void Tint(Sprite sprite = null)
-    {
+        private bool _isEmpty = true;
+        private bool _isTinted = false;
+        [SerializeField] private Color _placedColor = Color.gray;
 
-        _childRenderer.sprite = sprite ?? _dummy;
-        _childRenderer.enabled = true;
-        _isTinted = true;
-    }
+        public bool IsEmpty => _isEmpty;
 
 
-    public void PlaceTile(Sprite sprite = null)
-    {
-        _childRenderer.enabled = true;
-        _childRenderer.sprite = sprite ?? _dummy;
-        _childRenderer.color = _placedColor;
-        _isEmpty = false;
+        public void Untint()
+        {
+            _childRenderer.enabled = false;
+            _childRenderer.sprite = null;
+            _isTinted = false;
+        }
 
-    }
+        public void Tint(Sprite sprite = null)
+        {
 
-    [ContextMenu("Set Tile")]
-    public void PlaceTileCommand()
-    {
-        PlaceTile();
-    }
+            _childRenderer.sprite = sprite ?? _dummy;
+            _childRenderer.enabled = true;
+            _isTinted = true;
+        }
 
-    [ContextMenu("Reset Tile")]
-    public void ClearTile()
-    {
-        _childRenderer.enabled = false;
-        _childRenderer.sprite = _base;
-        _isEmpty = true;
+
+        public void PlaceTile(Sprite sprite = null)
+        {
+            _childRenderer.enabled = true;
+            _childRenderer.sprite = sprite ?? _dummy;
+            _childRenderer.color = _placedColor;
+            _isEmpty = false;
+
+        }
+
+        [ContextMenu("Tell World Space")]
+        public void TellWorldSpace()
+        {
+            var worldSpace = transform.position;
+            Debug.Log($"world space is {worldSpace}");
+        }
+
+        [ContextMenu("Set Tile")]
+        public void PlaceTileCommand()
+        {
+            PlaceTile();
+        }
+
+        [ContextMenu("Reset Tile")]
+        public void ClearTile()
+        {
+            _childRenderer.enabled = false;
+            _childRenderer.sprite = _base;
+            _isEmpty = true;
+        }
     }
 }
