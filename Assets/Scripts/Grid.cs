@@ -13,7 +13,7 @@ namespace Assets.Scripts
         private Cell[,] _cells;
 
         [SerializeField] private Shape _shape;
-        [SerializeField] private BlueprintRow _row;
+        [SerializeField] private ShapeRow _row;
 
         private List<Vector2Int> _tintedList = new List<Vector2Int>();
 
@@ -26,7 +26,7 @@ namespace Assets.Scripts
         private Camera _cam;
         [SerializeField] private float _shapeOffset;
         [SerializeField] private float _tintDistance = 0.3f;
-        [SerializeField] private bool _isDebugDrag;
+        [SerializeField] private bool _enableTouchInput;
 
         void Awake()
         {
@@ -36,6 +36,7 @@ namespace Assets.Scripts
         void Start()
         {
             _cam = Camera.main;
+            _row.OnShapeClicked += SetShape;
         }
 
         [ContextMenu("Get Cells")]
@@ -86,11 +87,11 @@ namespace Assets.Scripts
             for (int i = 0; i < _shape.Tiles.Count; i++)
             {
                 var shapeCell = _shape.Tiles[i];
-                var closestRow = GetClosestRow(shapeCell);
-                var closestCellCoord = GetClosestCell(shapeCell, closestRow);
+                var closestRow = GetClosestRow(shapeCell.transform);
+                var closestCellCoord = GetClosestCell(shapeCell.transform, closestRow);
                 var (x, y) = closestCellCoord;
 
-                toTintCells.Add((new Vector2Int(x, y), _shape.Tiles[i]));
+                toTintCells.Add((new Vector2Int(x, y), _shape.Tiles[i].transform));
 
             }
 
@@ -155,14 +156,10 @@ namespace Assets.Scripts
         [ContextMenu("Place Shape")]
         private void PlaceShape()
         {
-            if (!_canPlaceShape)
-            {
-                Debug.Log("Cannot place shape");
-                return;
-            }
+
             Debug.Log($"Placing shape");
 
-            foreach (var position in _toTintList)
+            foreach (var position in _tintedList)
                 _cells[position.x, position.y].PlaceTile();
 
             _toTintList.Clear();
@@ -185,6 +182,9 @@ namespace Assets.Scripts
 
         private void Update()
         {
+#if UNITY_EDITOR
+            if (!_enableTouchInput) return;
+#endif
 
             if (Input.touchCount == 0 || _shape == null)
                 return;
@@ -210,24 +210,32 @@ namespace Assets.Scripts
             if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
                 FinishDrag();
 
-
-
-
         }
 
         private void FinishDrag()
         {
-            foreach (var cell in _tintedList)
-                _cells[cell.x, cell.y].PlaceTile();
-            Destroy(_shape.gameObject);
+            if (_canPlaceShape)
+            {
+                PlaceShape();
+                
+                Destroy(_shape.gameObject);
+            }
+            else
+            {
+                _row.ReturnShape(_shape);
+            }
+
             _shape = null;
-            // UntintShape();
-            _row.RestoreBlueprints();
             _toTintList.Clear();
             _tintedList.Clear();
         }
 
-        public void SetShape(Shape shape) => _shape = shape;
+        public void SetShape(Shape shape)
+        {
+            _shape = shape;
+            _shape.transform.parent = transform;
+            _shape.transform.localScale = Vector3.one;
+        }
 
         private Vector2 ReadInput(Touch touch)
         {
@@ -235,7 +243,6 @@ namespace Assets.Scripts
             var screenPos = new Vector3(touch.position.x, touch.position.y, _cam.transform.position.z);
             Vector2 worldPosition = _cam.ScreenToWorldPoint(screenPos);
 
-            Debug.Log($"New shape position: {worldPosition}");
             return worldPosition;
         }
 

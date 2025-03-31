@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,24 +7,28 @@ namespace Assets.Scripts
     [RequireComponent(typeof(BoxCollider2D))]
     public class Shape : MonoBehaviour
     {
-        [SerializeField] private List<Transform> _tiles;
+        public event Action<Shape> OnClicked;
+
+        [SerializeField] private List<Tile> _tiles;
         [SerializeField] private Transform _shapeCell;
         [SerializeField] private Transform _gridCell;
-        public List<Transform> Tiles => _tiles;
+        public List<Tile> Tiles => _tiles;
+        private BoxCollider2D _boxCollider;
 
+        private int _index;
+        public int Index { get => _index; set => _index = value; }
 
-        [ContextMenu("Tell Cell World Space")]
-        private void TellCellWorldSpace()
+        public void SetCollider(int width, int height)
         {
-            var worldSpace = _shapeCell.position;
-            Debug.Log($"world space is {worldSpace}");
+            _boxCollider = GetComponent<BoxCollider2D>();
+            //set size;
         }
 
-        [ContextMenu("Get Distance between shape cell and grid cell")]
-        private void GetDistance()
+
+        private void OnMouseDown()
         {
-            var distance = Vector2.Distance(_shapeCell.position, _gridCell.position);
-            Debug.Log($"Distance is {distance}");
+            OnClicked?.Invoke(this);
+            Debug.Log($"Blueprint clicked");
         }
     }
 }

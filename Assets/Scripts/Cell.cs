@@ -41,12 +41,6 @@ namespace Assets.Scripts
 
         }
 
-        [ContextMenu("Tell World Space")]
-        public void TellWorldSpace()
-        {
-            var worldSpace = transform.position;
-            Debug.Log($"world space is {worldSpace}");
-        }
 
         [ContextMenu("Set Tile")]
         public void PlaceTileCommand()
