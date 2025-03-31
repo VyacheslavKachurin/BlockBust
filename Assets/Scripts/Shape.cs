@@ -28,7 +28,6 @@ namespace Assets.Scripts
         private void OnMouseDown()
         {
             OnClicked?.Invoke(this);
-            Debug.Log($"Blueprint clicked");
         }
     }
 }

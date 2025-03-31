@@ -167,7 +167,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _grid: {fileID: 1829240186}
-  _shapeGenerator: {fileID: 104452527}
   _spawnPoints:
   - {fileID: 1161902386}
   - {fileID: 2139300554}
@@ -717,7 +716,15 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2629862866538408663, guid: 3ea7c2bbed9484095bede3428272aad7, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3453641726522050433, guid: 3ea7c2bbed9484095bede3428272aad7, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4863169680336380211, guid: 3ea7c2bbed9484095bede3428272aad7, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}

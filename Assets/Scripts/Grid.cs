@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-
+using System.Text;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -11,6 +11,8 @@ namespace Assets.Scripts
 
         [SerializeField] List<Transform> _rows;
         private Cell[,] _cells;
+
+        private int[,] _grid;
 
         [SerializeField] private Shape _shape;
         [SerializeField] private ShapeRow _row;
@@ -48,6 +50,7 @@ namespace Assets.Scripts
         private void InitCellsArray()
         {
             _cells = new Cell[_sideSize, _sideSize];
+            _grid = new int[_sideSize, _sideSize];
             for (int y = 0; y < _sideSize; y++)
             {
                 var row = _rows[y];
@@ -57,9 +60,26 @@ namespace Assets.Scripts
                 {
                     var cell = children[x];
                     _cells[x, y] = cell;
+                    // _grid[x, y] = (int)FillType.Empty;
                     cell.name = $"Cell {x}, {y}";
                 }
             }
+        }
+
+        [ContextMenu("Log Grid")]
+        private void LogGrid()
+        {
+            var builder = new StringBuilder();
+            for (int y = 0; y < _sideSize; y++)
+            {
+                builder.Append("\n[");
+                for (int x = 0; x < _sideSize; x++)
+                {
+                    builder.Append($"{_grid[x, y]}");
+                    if (x < _sideSize - 1) builder.Append(","); else builder.Append("]");
+                }
+            }
+            Debug.Log($"{builder}");
         }
 
 
@@ -68,6 +88,7 @@ namespace Assets.Scripts
 
             _cells[x, y].Tint();
             _tintedList.Add(new Vector2Int(x, y));
+            _grid[x, y] = (int)FillType.Tinted;
 
         }
 
@@ -75,6 +96,7 @@ namespace Assets.Scripts
         public void UntintCell(int x, int y)
         {
             _cells[x, y].Untint();
+            _grid[x, y] = (int)FillType.Empty;
 
         }
 
@@ -104,7 +126,7 @@ namespace Assets.Scripts
                 if (!isAccessible)
                 {
                     _canPlaceShape = false;
-                    Debug.Log($"Cell {cell.x}, {cell.y} is not accessible");
+
                     UntintShape();
                     _toTintList.Clear();
                     return;
@@ -130,10 +152,7 @@ namespace Assets.Scripts
 
             var gridCell = _cells[x, y];
             if (!gridCell.IsEmpty)
-            {
-                Debug.Log($"Cell is not empty: {x},{y}");
                 return false;
-            }
 
 
             // Debug.Log($"Comparing {cell.position}, worldPos:{} to {new Vector2(x, y)}");
@@ -157,10 +176,13 @@ namespace Assets.Scripts
         private void PlaceShape()
         {
 
-            Debug.Log($"Placing shape");
 
             foreach (var position in _tintedList)
+            {
                 _cells[position.x, position.y].PlaceTile();
+                _grid[position.x, position.y] = (int)FillType.Placed;
+            }
+
 
             _toTintList.Clear();
             _tintedList.Clear();
@@ -174,6 +196,7 @@ namespace Assets.Scripts
             {
                 var position = _tintedList[i];
                 UntintCell(position.x, position.y);
+
             }
             _tintedList.Clear();
 
@@ -198,18 +221,76 @@ namespace Assets.Scripts
 
             if (touch.phase == TouchPhase.Moved)
             {
-                TintShape();
 
                 var newShapePos = ReadInput(touch);
 
                 _shape.transform.position = newShapePos + new Vector2(0, _shapeOffset);
+                TintShape();
+
+                if (!_canPlaceShape) return;
+
+                var (rows, columns) = CheckMatch();
+                ShowMatches(rows, columns);
+
 
             }
 
 
             if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            {
                 FinishDrag();
 
+                if (!_canPlaceShape) return;
+
+                var (rows, columns) = CheckMatch();
+                HandleMatches(rows, columns);
+
+            }
+
+        }
+
+        private void ShowMatches(List<int> rows, List<int> columns)
+        {
+           
+        }
+
+        private void HandleMatches(List<int> rows, List<int> columns)
+        {
+           
+        }
+
+        private (List<int>, List<int>) CheckMatch()
+        {
+            List<int> rows = new List<int>();
+            List<int> columns = new List<int>();
+
+            for (int y = 0; y < _sideSize; y++)
+                if (CheckRowMatch(y)) rows.Add(y);
+
+            for (int x = 0; x < _sideSize; x++)
+                if (CheckColumnMatch(x)) columns.Add(x);
+
+            if (rows.Count > 0 || columns.Count > 0)
+                Debug.Log($"Found matches in rows:{string.Join(",", rows)} and columns:{string.Join(",", columns)}");
+
+            return (rows, columns);
+
+        }
+
+
+        private bool CheckRowMatch(int y)
+        {
+            for (int x = 0; x < _sideSize; x++)
+                if (_grid[x, y] == (int)FillType.Empty) return false;
+            return true;
+        }
+
+        private bool CheckColumnMatch(int x)
+        {
+
+            for (int y = 0; y < _sideSize; y++)
+                if (_grid[x, y] == (int)FillType.Empty) return false;
+            return true;
         }
 
         private void FinishDrag()
@@ -217,8 +298,8 @@ namespace Assets.Scripts
             if (_canPlaceShape)
             {
                 PlaceShape();
-                
                 Destroy(_shape.gameObject);
+
             }
             else
             {
@@ -284,4 +365,11 @@ namespace Assets.Scripts
             return closestRow;
         }
     }
+}
+
+public enum FillType
+{
+    Empty,
+    Tinted,
+    Placed
 }
