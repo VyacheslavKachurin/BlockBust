@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using static Assets.Scripts.Extensions;
 
 namespace Assets.Scripts
 {
@@ -252,6 +253,36 @@ namespace Assets.Scripts
 
         private void HandleMatches(List<int> rows, List<int> columns)
         {
+            if (rows.Count > 0)
+                foreach (var row in rows)
+                    ClearRow(row);
+
+            if (columns.Count > 0)
+                foreach (var column in columns)
+                    ClearColumn(column);
+
+        }
+
+        private void ClearColumn(int column)
+        {
+            Debug.Log($"Clearing column {column}");
+
+            for (int y = 0; y < _sideSize; y++)
+            {
+                _grid[column, y] = (int)FillType.Empty;
+                _cells[column, y].ClearTile();
+            }
+        }
+
+        private void ClearRow(int row)
+        {
+            Debug.Log($"Clearing row {row}");
+
+            for (int x = 0; x < _sideSize; x++)
+            {
+                _grid[x, row] = (int)FillType.Empty;
+                _cells[x, row].ClearTile();
+            }
 
         }
 

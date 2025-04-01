@@ -12,6 +12,7 @@ namespace Assets.Scripts
         private bool _isEmpty = true;
         private bool _isTinted = false;
         [SerializeField] private Color _placedColor = Color.gray;
+        [SerializeField] private Color _tintColor;
 
         public bool IsEmpty => _isEmpty;
 
@@ -25,7 +26,6 @@ namespace Assets.Scripts
 
         public void Tint(Sprite sprite = null)
         {
-
             _childRenderer.sprite = sprite ?? _dummy;
             _childRenderer.enabled = true;
             _isTinted = true;
@@ -51,8 +51,10 @@ namespace Assets.Scripts
         [ContextMenu("Reset Tile")]
         public void ClearTile()
         {
+            Debug.Log($"Clearing tile");
             _childRenderer.enabled = false;
             _childRenderer.sprite = _base;
+            _childRenderer.color = _tintColor;
             _isEmpty = true;
         }
     }

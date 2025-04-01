@@ -32,7 +32,6 @@ namespace Assets.Scripts
 
         private void HandleShapePlaced(Shape shape)
         {
-            shape.OnClicked -= HandleClick;
             shape.OnPlaced -= HandleShapePlaced;
             _shapes[shape.Index] = null;
         }
