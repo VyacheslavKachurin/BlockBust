@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -11,7 +12,20 @@ namespace Assets.Scripts
 
         private void Start()
         {
+            EventManager.OnShapePlaced += HandleShapePlaced;
 
+            PopulateRow();
+        }
+
+        private void HandleShapePlaced(Shape shape)
+        {
+            if (_row.FreeSlots == _row.SpawnPointsAmount)
+                PopulateRow();
+        }
+
+        private void OnDestroy()
+        {
+            EventManager.OnShapePlaced -= HandleShapePlaced;
         }
 
         [ContextMenu("Populate Row")]

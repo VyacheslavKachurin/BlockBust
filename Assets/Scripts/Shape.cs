@@ -8,6 +8,7 @@ namespace Assets.Scripts
     public class Shape : MonoBehaviour
     {
         public event Action<Shape> OnClicked;
+        public event Action<Shape> OnPlaced;
 
         [SerializeField] private List<Tile> _tiles;
         [SerializeField] private Transform _shapeCell;
@@ -23,6 +24,13 @@ namespace Assets.Scripts
             _boxCollider = GetComponent<BoxCollider2D>();
             //set size;
         }
+
+
+        public void RaisePlacedEvent()
+        {
+            OnPlaced?.Invoke(this);
+        }
+
 
 
         private void OnMouseDown()

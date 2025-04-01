@@ -23,12 +23,19 @@ namespace Assets.Scripts
             var emptyIndex = shape.Index == -1 ? Array.FindIndex(_shapes, x => x == null) : shape.Index;
             _shapes[emptyIndex] = shape;
             shape.OnClicked += HandleClick;
+            shape.OnPlaced += HandleShapePlaced;
             shape.transform.position = _spawnPoints[emptyIndex].position;
             shape.transform.localScale = new Vector3(_scale, _scale, _scale);
             shape.transform.parent = _shapesParent;
             shape.Index = emptyIndex;
         }
 
+        private void HandleShapePlaced(Shape shape)
+        {
+            shape.OnClicked -= HandleClick;
+            shape.OnPlaced -= HandleShapePlaced;
+            _shapes[shape.Index] = null;
+        }
 
 
         private void HandleClick(Shape shape)

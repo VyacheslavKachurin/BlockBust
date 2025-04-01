@@ -144,11 +144,7 @@ namespace Assets.Scripts
 
         private bool AddToTintList(int x, int y, Transform shapeCell)
         {
-            if (_toTintList.Contains(new Vector2Int(x, y)))
-            {
-                Debug.Log($"Element is already added to tint list:{x},{y}");
-                return false;
-            }
+            if (_toTintList.Contains(new Vector2Int(x, y))) return false;
 
             var gridCell = _cells[x, y];
             if (!gridCell.IsEmpty)
@@ -251,12 +247,12 @@ namespace Assets.Scripts
 
         private void ShowMatches(List<int> rows, List<int> columns)
         {
-           
+
         }
 
         private void HandleMatches(List<int> rows, List<int> columns)
         {
-           
+
         }
 
         private (List<int>, List<int>) CheckMatch()
@@ -298,8 +294,9 @@ namespace Assets.Scripts
             if (_canPlaceShape)
             {
                 PlaceShape();
+                _shape.RaisePlacedEvent();
+                EventManager.RaiseShapePlaced(_shape);
                 Destroy(_shape.gameObject);
-
             }
             else
             {

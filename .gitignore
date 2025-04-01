@@ -10,6 +10,9 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
+/Assets/Shaders/
+/Assets/Editor/
+/Assets/References/
 
 # Custom things
 /Assets/Editor/CustomInspector
