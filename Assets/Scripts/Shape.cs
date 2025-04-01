@@ -11,9 +11,9 @@ namespace Assets.Scripts
         public event Action<Shape> OnPlaced;
 
         [SerializeField] private List<Tile> _tiles;
-        [SerializeField] private Transform _shapeCell;
-        [SerializeField] private Transform _gridCell;
         public List<Tile> Tiles => _tiles;
+        private int _tileCount;
+        public int TileCount => _tileCount;
         private BoxCollider2D _boxCollider;
 
         private int _index;
@@ -25,12 +25,16 @@ namespace Assets.Scripts
             //set size;
         }
 
+        private void Start()
+        {
+            _tileCount = _tiles.Count;
+        }
+
 
         public void RaisePlacedEvent()
         {
             OnPlaced?.Invoke(this);
         }
-
 
 
         private void OnMouseDown()

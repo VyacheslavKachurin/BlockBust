@@ -240,6 +240,8 @@ namespace Assets.Scripts
                 if (!_canPlaceShape) return;
 
                 var (rows, columns) = CheckMatch();
+                if (rows.Count == 0 && columns.Count == 0) return;
+
                 HandleMatches(rows, columns);
 
             }
@@ -253,6 +255,7 @@ namespace Assets.Scripts
 
         private void HandleMatches(List<int> rows, List<int> columns)
         {
+
             if (rows.Count > 0)
                 foreach (var row in rows)
                     ClearRow(row);
@@ -260,6 +263,9 @@ namespace Assets.Scripts
             if (columns.Count > 0)
                 foreach (var column in columns)
                     ClearColumn(column);
+
+            var totalLines = rows.Count + columns.Count;
+            EventManager.RaiseLineCleared(_sideSize * totalLines, totalLines);
 
         }
 
