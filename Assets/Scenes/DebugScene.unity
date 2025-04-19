@@ -166,7 +166,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca8b31f40a14544878462c2d61727a8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grid: {fileID: 1829240186}
   _spawnPoints:
   - {fileID: 1161902386}
   - {fileID: 2139300554}
@@ -190,7 +189,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &71468319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,7 +236,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d00d1aafd7e541c8b6e6dc1b6d896cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _car: {fileID: 202240389}
 --- !u!1 &104452526
 GameObject:
   m_ObjectHideFlags: 0
@@ -272,6 +270,7 @@ MonoBehaviour:
   _width: 2
   _height: 2
   _squarePrefab: {fileID: 8101081910812494367, guid: e0b8cb1252f6b4ca5a43ef17504d817e, type: 3}
+  _getSquaresOnly: 0
 --- !u!4 &104452528
 Transform:
   m_ObjectHideFlags: 0
@@ -321,55 +320,6 @@ Transform:
   - {fileID: 2118798106}
   m_Father: {fileID: 65641826}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &202240387
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 202240388}
-  - component: {fileID: 202240389}
-  m_Layer: 0
-  m_Name: Car
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &202240388
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 202240387}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.2607762, y: 1.0542712, z: -0.018220045}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2008131705}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &202240389
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 202240387}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 150bd275e0b6a449794c39cfc92e1149, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Company: Moskvich
-  Year: 2000
-  Color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  Coins: 0
-  _inputCoins: 0
 --- !u!1 &255389569
 GameObject:
   m_ObjectHideFlags: 0
@@ -531,6 +481,9 @@ MonoBehaviour:
   _shapeGenerator: {fileID: 104452527}
   _grid: {fileID: 1829240186}
   _row: {fileID: 65641827}
+  _scoreReference: {fileID: 11400000, guid: 4f4fa9ce90a1a44449a3772c51004f02, type: 2}
+  _levelView: {fileID: 71468321}
+  _currentScore: 0
 --- !u!4 &361698121
 Transform:
   m_ObjectHideFlags: 0
@@ -1290,7 +1243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1647059100
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1572,38 +1525,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &2008131704
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2008131705}
-  m_Layer: 0
-  m_Name: CarFather
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &2008131705
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2008131704}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.75, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 202240388}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2118798105
 GameObject:
   m_ObjectHideFlags: 0
@@ -1839,6 +1760,5 @@ SceneRoots:
   - {fileID: 65641826}
   - {fileID: 1647059101}
   - {fileID: 104452528}
-  - {fileID: 2008131705}
   - {fileID: 71468320}
   - {fileID: 361698121}

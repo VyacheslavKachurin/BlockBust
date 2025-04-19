@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 namespace Assets.Scripts
 {
@@ -10,18 +11,23 @@ namespace Assets.Scripts
         [SerializeField] private ShapeRow _row;
 
         [SerializeField] private ScoreReference _scoreReference;
+        [SerializeField] private LevelView _levelView;
 
-        private int _currentScore = 0;
-        public int CurrentScore => _currentScore;
-
+        public int _currentScore = 0;
+        private GameInfo _gameInfo;
 
         private void Start()
         {
             EventManager.OnShapePlaced += HandleShapePlaced;
             EventManager.OnLineCleared += HandleLineCleared;
-
+            _gameInfo = new GameInfo();
             PopulateRow();
+
+            _levelView.Init();
+            _levelView.BindScore(_gameInfo);
         }
+
+
 
         private void OnDestroy()
         {
@@ -46,6 +52,8 @@ namespace Assets.Scripts
         {
             var scoreToAdd = tileCount * multiplier;
             _currentScore += scoreToAdd;
+            _gameInfo.CurrentScore = _currentScore;
+
             Debug.Log($"Added {scoreToAdd} to score \n Current Score: {_currentScore}");
         }
 
@@ -64,4 +72,16 @@ namespace Assets.Scripts
 
         }
     }
+
+    public interface IScoreProvider
+    {
+        public int CurrentScore { get; }
+    }
+
+    public class GameInfo
+    {
+        public int CurrentScore;
+    }
+
 }
+
